@@ -1,7 +1,54 @@
-const jsonString =
-  '{"conditons":"[{\\"condition\\":\\"equal\\",\\"target\\":\\"amount_spent\\",\\"value\\":\\"50000\\",\\"_id\\":\\"655c57b1200d6a9cc023f8fc\\"},{\\"condition\\":\\"exactly\\",\\"target\\":\\"customer_added_date\\",\\"value\\":\\"2023-11-15T14:09:14+07:00\\",\\"_id\\":\\"655c57b1200d6a9cc023f8fd\\"},{\\"condition\\":\\">= -7d\\",\\"target\\":\\"abandoned_checkout_date\\",\\"value\\":\\"\\",\\"_id\\":\\"655c57b1200d6a9cc023f8fe\\"}]"}';
+function updateNestedObjectParser(obj, prefix = '') {
+  const result = {};
 
-const data = JSON.parse(jsonString);
-const conditions = JSON.parse(data.conditons);
+  for (const key in obj) {
+    if (obj.hasOwnProperty(key)) {
+      const newKey = prefix ? `${prefix}.${key}` : key;
 
-console.log(conditions);
+      if (typeof obj[key] === 'object' && obj[key] !== null) {
+        Object.assign(result, updateNestedObjectParser(obj[key], newKey));
+      } else {
+        result[newKey] = obj[key];
+      }
+    }
+  }
+
+  return result;
+}
+
+function removeUndefinedAndNull(obj) {
+  const result = {};
+
+  for (const key in obj) {
+    if (
+      obj.hasOwnProperty(key) &&
+      obj[key] !== undefined &&
+      obj[key] !== null
+    ) {
+      result[key] = obj[key];
+    }
+  }
+
+  return result;
+}
+
+const inputObject = {
+  a: {
+    b: 1,
+    c: 2,
+  },
+  d: {
+    e: {
+      f: 3,
+      g: 4,
+      j: 5,
+      x: {
+        m: undefined,
+        n: null,
+      },
+    },
+  },
+};
+
+const updatedObject = updateNestedObjectParser(inputObject);
+console.log(removeUndefinedAndNull(updatedObject));
