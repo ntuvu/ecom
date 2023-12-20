@@ -30,6 +30,10 @@ class DiscountController {
       }),
     }).send(res);
   }
+
+  static async deleteDiscount(req, res, next) {
+    
+  }
 }
 
 module.exports = DiscountController;

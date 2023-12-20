@@ -1,3 +1,4 @@
+const { convertToObjectIdMongodb } = require('../../utils');
 const { discount } = require('../discount.model');
 
 class DiscountRepo {
@@ -32,6 +33,17 @@ class DiscountRepo {
       .lean();
 
     return discounts;
+  }
+
+  static async findDiscountAndDelete({ shopId, codeId }) {
+    return await discount.findOneAndDelete({
+      discountCode: codeId,
+      discountShopId: convertToObjectIdMongodb(shopId),
+    });
+  }
+
+  static async findDiscountAndUpdate({ codeId, update }) {
+    return await discount.findByIdAndUpdate(codeId, update);
   }
 }
 
